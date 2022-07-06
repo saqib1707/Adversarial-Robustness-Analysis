@@ -40,7 +40,7 @@ class FGSM(Attack):
         if self._targeted:
             target_labels = self._get_target_label(images, labels)
 
-        loss = nn.CrossEntropyLoss()
+#         loss = nn.CrossEntropyLoss()
 
         images.requires_grad = True
         outputs = self.model(images)
