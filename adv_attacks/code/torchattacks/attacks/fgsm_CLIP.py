@@ -27,8 +27,6 @@ class FGSM_CLIP(Attack):
 
     """
     def __init__(self, model, eps=0.007):
-#         print("Inside init")
-#         print("Inside Saqib's init!!!")
         super().__init__("FGSM_CLIP", model)
         self.eps = eps
         self._supported_mode = ['default', 'targeted']
