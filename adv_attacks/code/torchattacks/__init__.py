@@ -1,4 +1,5 @@
 from .attacks.fgsm import FGSM
+from .attacks.fgsm_CLIP import FGSM_CLIP
 # from .attacks.bim import BIM
 # from .attacks.rfgsm import RFGSM
 # from .attacks.cw import CW

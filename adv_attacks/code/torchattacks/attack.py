@@ -1,5 +1,6 @@
 import time
 import torch
+import clip
 
 
 class Attack(object):

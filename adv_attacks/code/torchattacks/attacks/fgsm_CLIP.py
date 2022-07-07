@@ -2,9 +2,10 @@ import torch
 import torch.nn as nn
 
 from ..attack import Attack
+import clip
 
 
-class FGSM(Attack):
+class FGSM_CLIP(Attack):
     r"""
     FGSM in the paper 'Explaining and harnessing adversarial examples'
     [https://arxiv.org/abs/1412.6572]
@@ -26,11 +27,13 @@ class FGSM(Attack):
 
     """
     def __init__(self, model, eps=0.007):
-        super().__init__("FGSM", model)
+#         print("Inside init")
+#         print("Inside Saqib's init!!!")
+        super().__init__("FGSM_CLIP", model)
         self.eps = eps
         self._supported_mode = ['default', 'targeted']
 
-    def forward(self, images, labels):
+    def forward(self, images, labels, text_features=None):
         r"""
         Overridden.
         """
@@ -40,22 +43,29 @@ class FGSM(Attack):
         if self._targeted:
             target_labels = self._get_target_label(images, labels)
 
-        loss = nn.CrossEntropyLoss()
-        
         images.requires_grad = True
-        outputs = self.model(images)
+#         loss = nn.CrossEntropyLoss()
+        
+        img_features = self.model.encode_image(images).float()
+        img_features = img_features / torch.linalg.norm(img_features, dim=1, keepdim=True)
+        
+        similarity_map = torch.matmul(img_features, text_features.T)
+        print(similarity_map.shape, labels.shape)
+        
+#         outputs = self.model(images)
 
         # Calculate loss
-        if self._targeted:
-            cost = -loss(outputs, target_labels)
-        else:
-            cost = loss(outputs, labels)
+#         if self._targeted:
+#             cost = -loss(outputs, target_labels)
+#         else:
+#             cost = loss(outputs, labels)
 
         # Update adversarial images
-        grad = torch.autograd.grad(cost, images,
-                                   retain_graph=False, create_graph=False)[0]
+#         grad = torch.autograd.grad(cost, images,
+#                                    retain_graph=False, create_graph=False)[0]
 
-        adv_images = images + self.eps*grad.sign()
-        adv_images = torch.clamp(adv_images, min=0, max=1).detach()
+#         adv_images = images + self.eps*grad.sign()
+#         adv_images = torch.clamp(adv_images, min=0, max=1).detach()
 
-        return adv_images
+#         return adv_images
+        return 0
