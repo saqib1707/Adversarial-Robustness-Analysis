@@ -20,7 +20,6 @@ class Attack(object):
             name (str): name of attack.
             model (torch.nn.Module): model to attack.
         """
-
         self.attack = name
         self.model = model
         self.model_name = str(model).split("(")[0]

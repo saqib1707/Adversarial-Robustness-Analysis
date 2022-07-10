@@ -1,29 +1,28 @@
-from .attacks.fgsm import FGSM
-from .attacks.fgsm_CLIP import FGSM_CLIP
-# from .attacks.bim import BIM
-# from .attacks.rfgsm import RFGSM
-# from .attacks.cw import CW
-from .attacks.pgd import PGD
-from .attacks.pgdl2 import PGDL2
-# from .attacks.eotpgd import EOTPGD
-from .attacks.multiattack import MultiAttack
-from .attacks.ffgsm import FFGSM
-# from .attacks.tpgd import TPGD
-# from .attacks.mifgsm import MIFGSM
-from .attacks.vanila import VANILA
-# from .attacks.gn import GN
-# from .attacks.upgd import UPGD
-from .attacks.apgd import APGD
-from .attacks.apgdt import APGDT
-from .attacks.fab import FAB
-from .attacks.square import Square
-from .attacks.autoattack import AutoAttack
-from .attacks.onepixel import OnePixel
-# from .attacks.deepfool import DeepFool
-# from .attacks.sparsefool import SparseFool
-# from .attacks.difgsm import DIFGSM
-# from .attacks.tifgsm import TIFGSM
-# from .attacks.jitter import Jitter
-# from .attacks.pixle import Pixle
+from .attack_methods.fgsm import FGSM, FGSM_CLIP
+# from .attack_methods.bim import BIM
+# from .attack_methods.rfgsm import RFGSM
+# from .attack_methods.cw import CW
+from .attack_methods.pgd import PGD
+from .attack_methods.pgdl2 import PGDL2
+# from .attack_methods.eotpgd import EOTPGD
+from .attack_methods.multiattack import MultiAttack
+from .attack_methods.ffgsm import FFGSM
+# from .attack_methods.tpgd import TPGD
+# from .attack_methods.mifgsm import MIFGSM
+from .attack_methods.vanila import VANILA
+# from .attack_methods.gn import GN
+# from .attack_methods.upgd import UPGD
+from .attack_methods.apgd import APGD
+from .attack_methods.apgdt import APGDT
+from .attack_methods.fab import FAB
+from .attack_methods.square import Square
+from .attack_methods.autoattack import AutoAttack
+from .attack_methods.onepixel import OnePixel
+# from .attack_methods.deepfool import DeepFool
+# from .attack_methods.sparsefool import SparseFool
+# from .attack_methods.difgsm import DIFGSM
+# from .attack_methods.tifgsm import TIFGSM
+# from .attack_methods.jitter import Jitter
+# from .attack_methods.pixle import Pixle
 
 __version__ = '3.2.6'
