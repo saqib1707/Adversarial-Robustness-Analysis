@@ -109,6 +109,7 @@ class PGD_CLIP(Attack):
         self.steps = steps
         self.random_start = random_start
         self._supported_mode = ['default', 'targeted']
+        self.softmax_obj = torch.nn.Softmax(dim=1)
 
     def forward(self, images, labels, text_features=None):
         r"""
@@ -139,13 +140,16 @@ class PGD_CLIP(Attack):
             batch_size = similarity_map.shape[0]
             num_classes = similarity_map.shape[1]
             
-            batch_loss = 0
-            for i in range(batch_size):
-                for j in range(num_classes):
-                    if j == labels[i]:
-                        batch_loss -= similarity_map[i, j]
-                    else:
-                        batch_loss += similarity_map[i, j]
+            sim_map_logprob = torch.log(self.softmax_obj(similarity_map))
+            batch_loss = torch.mean(torch.sum(sim_map_logprob, dim=1) - 2 * sim_map_logprob[range(batch_size), labels])
+            
+#             batch_loss = 0
+#             for i in range(batch_size):
+#                 for j in range(num_classes):
+#                     if j == labels[i]:
+#                         batch_loss -= similarity_map[i, j]
+#                     else:
+#                         batch_loss += similarity_map[i, j]
 
             # Calculate loss
 #             if self._targeted:

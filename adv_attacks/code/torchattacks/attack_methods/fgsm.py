@@ -87,6 +87,7 @@ class FGSM_CLIP(Attack):
         super().__init__("FGSM_CLIP", model)
         self.eps = eps
         self._supported_mode = ['default', 'targeted']
+        self.softmax_obj = torch.nn.Softmax(dim=1)
 
     def forward(self, images, labels, text_features=None):
         images = images.clone().detach().to(self.device)
@@ -105,18 +106,19 @@ class FGSM_CLIP(Attack):
         
         batch_size = similarity_map.shape[0]
         num_classes = similarity_map.shape[1]
+
+        sim_map_logprob = torch.log(self.softmax_obj(similarity_map))
+        batch_loss = torch.mean(torch.sum(sim_map_logprob, dim=1) - 2 * sim_map_logprob[range(batch_size), labels])
         
-        batch_loss = 0
-        for i in range(batch_size):
-            for j in range(num_classes):
-                if j == labels[i]:
-                    batch_loss -= similarity_map[i, j]
-                else:
-                    batch_loss += similarity_map[i, j]
+#         batch_loss = 0
+#         for i in range(batch_size):
+#             for j in range(num_classes):
+#                 if j == labels[i]:
+#                     batch_loss -= similarity_map[i, j]
+#                 else:
+#                     batch_loss += similarity_map[i, j]
 
 #         loss_lst = [[item[labels[i]]] for item in similarity_map[i]]
-        
-#         outputs = self.model(images)
 
         # Calculate loss
 #         if self._targeted:
