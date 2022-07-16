@@ -2,7 +2,9 @@
 thumbs.db
 .idea
 
+# repo related files and directories
 data/
+nautilus_kubernetes/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
