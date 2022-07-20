@@ -1,8 +1,18 @@
+from typing import List
 import numpy as np
 import torch
 import torchvision
 import torchvision.transforms as TVtransforms
 import torchvision.datasets as TVdatasets
+
+
+DATASETS_LIST = ["mnist", "cifar10", "cifar100", "imagenet"]
+
+_IMAGENET_MEAN = [0.485, 0.456, 0.406]
+_IMAGENET_STDDEV = [0.229, 0.224, 0.225]
+
+_CIFAR10_MEAN = [0.4914, 0.4822, 0.4465]
+_CIFAR10_STDDEV = [0.2023, 0.1994, 0.2010]
 
 
 def load_MNIST_data(data_dir, train_batch_size, test_batch_size, preprocess, kwargs):
@@ -70,3 +80,36 @@ def load_CIFAR10_data(data_dir, train_batch_size, test_batch_size, preprocess, k
                                             **kwargs)
 
     return trainloader, testloader, classes
+
+
+def get_normalized_layer(dataset: str, device: torch.device) -> torch.nn.Module:
+    # return the dataset's normalization layer
+    if dataset == "imagenet":
+        return NormalizeLayer(_IMAGENET_MEAN, _IMAGENET_STDDEV, device)
+    elif dataset == "cifar10":
+        return NormalizeLayer(_CIFAR10_MEAN, _CIFAR10_STDDEV, device)
+    
+
+class NormalizeLayer(torch.nn.Module):
+    def __init__(self, channel_mean: List[float], channel_std: List[float], device: torch.device):
+        super(NormalizeLayer, self).__init__()
+        self.channel_mean = torch.tensor(channel_mean).to(device)
+        self.channel_std = torch.tensor(channel_std).to(device)
+    
+    def forward(self, input: torch.tensor):
+        batch_size, num_channels, height, width = input.shape
+        channel_mean = self.channel_mean.repeat((batch_size, height, width, 1)).permute(0, 3, 1, 2)
+        channel_std = self.channel_std.repeat((batch_size, height, width, 1)).permute(0, 3, 1, 2)
+
+        return (input - channel_mean) / channel_std
+    
+
+def get_num_classes(dataset: str):
+    if dataset == "imagenet":
+        return 1000
+    elif dataset == "cifar10":
+        return 10
+    elif dataset == "cifar100":
+        return 100
+
+

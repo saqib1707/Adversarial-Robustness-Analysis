@@ -5,6 +5,7 @@ thumbs.db
 # repo related files and directories
 data/
 nautilus_kubernetes/
+model_checkpoints/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
