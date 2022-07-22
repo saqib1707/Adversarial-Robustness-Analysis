@@ -225,6 +225,7 @@ def get_architecture(arch: str, dataset_name: str, device: torch.device) -> torc
     elif arch == "cifar_resnet20":
         model = ResNet(depth=20, num_classes=10).to(device)
     elif arch == "cifar_resnet110":
+        # print("Inside here: ", device)
         model = ResNet(depth=110, num_classes=10).to(device)
     elif arch == "imagenet32_resnet110":
         model = ResNet(depth=110, num_classes=1000).to(device)

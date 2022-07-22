@@ -1,6 +1,7 @@
 numpy
 matplotlib
 scipy
+statsmodels
 sklearn
 scikit-learn
 pandas

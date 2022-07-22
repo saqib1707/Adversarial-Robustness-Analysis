@@ -15,7 +15,7 @@ _CIFAR10_MEAN = [0.4914, 0.4822, 0.4465]
 _CIFAR10_STDDEV = [0.2023, 0.1994, 0.2010]
 
 
-def load_MNIST_data(data_dir, train_batch_size, test_batch_size, preprocess, kwargs):
+def load_mnist_data(data_dir, train_batch_size, test_batch_size, preprocess, kwargs):
 #     mnist_transform = transforms.Compose([transforms.Resize((224, 224), interpolation=transforms.InterpolationMode.BICUBIC),
 #                                           transforms.CenterCrop(224),
 #                                           transforms.ToTensor()])
@@ -49,7 +49,7 @@ def load_MNIST_data(data_dir, train_batch_size, test_batch_size, preprocess, kwa
     return trainloader, testloader
 
 
-def load_CIFAR10_data(data_dir, train_batch_size, test_batch_size, preprocess, kwargs):
+def load_cifar10_data(data_dir, train_batch_size, test_batch_size, preprocess, kwargs):
     if preprocess is None:
         preprocess = TVtransforms.Compose([TVtransforms.ToTensor(), 
                                             TVtransforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5))])
@@ -104,12 +104,12 @@ class NormalizeLayer(torch.nn.Module):
         return (input - channel_mean) / channel_std
     
 
-def get_num_classes(dataset: str):
-    if dataset == "imagenet":
+def get_num_classes(dataset_name: str):
+    if dataset_name == "imagenet":
         return 1000
-    elif dataset == "cifar10":
+    elif dataset_name == "cifar10" or dataset_name == "mnist":
         return 10
-    elif dataset == "cifar100":
+    elif dataset_name == "cifar100":
         return 100
 
 
