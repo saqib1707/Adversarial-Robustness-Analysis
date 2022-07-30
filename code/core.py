@@ -96,7 +96,7 @@ class SmoothClassifier(object):
 
                 for class_idx in predictions:
                     noise_count_per_class[class_idx] += 1
-kernel_size(total_num_samples + total_pred_samples)
+
         assert(num_noise_samples == np.sum(noise_count_per_class))
 
         return noise_count_per_class

@@ -95,6 +95,8 @@ def test_attack(model, trainloader, testloader, fgsm_attack, pgd_attack):
     print("Robust accuracy (PGD attack): {} %".format(test_acc))
 
 
+
+
 if __name__ == "__main__":
     test_model = models.CNN_net().to(device)
 
