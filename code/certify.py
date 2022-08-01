@@ -17,6 +17,9 @@ parser.add_argument("--N0", type=int, default=100, help="number of samples for s
 parser.add_argument("--N", type=int, default=100000, help="number of samples for estimation")
 parser.add_argument("--alpha", type=float, default=1e-3, help="failure probability")
 parser.add_argument("--batch_size", type=int, default=32, help="batch size")
+parser.add_argument("--skip_examples", type=int, default=1, help="samples to skip")
+parser.add_argument("--max_examples", type=int, default=-1, help="maximum samples to certify")
+
 args = parser.parse_args()
 
 print(args.dataset_name, args.base_classifier_path, args.sigma, args.batch_size, args.N0, args.N, args.alpha)
@@ -50,6 +53,12 @@ if __name__ == "__main__":
     num_corr_pred = 0
     
     for itr, (x, label) in enumerate(tqdm(testloader)):
+        if itr % args.skip_examples != 0:
+            continue
+        
+        if itr // args.skip_examples == args.max_examples:
+            break
+
         x = x.to(device)
         start_time = time.time()
         prediction, radius = smooth_classifier.certify(x, args.N0, args.N, args.alpha, args.batch_size)

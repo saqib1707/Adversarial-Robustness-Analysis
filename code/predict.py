@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     train_utils.requires_grad_(model=base_classifier, requires_grad=False)
 
-    # create the smoothed classifier g
+    # create the smoothed classifier g(x)
     smoothed_classifier = SmoothClassifier(base_classifier, datasets.get_num_classes(args.dataset_name), args.sigma)
 
     if args.attack == "PGD":
@@ -74,8 +74,7 @@ if __name__ == "__main__":
     elif args.attack == 'DDN':
         print('Attack method - DDN')
         attacker = DDN(steps=args.num_steps, device=device, max_norm=args.epsilon, 
-                    init_norm=args.init_norm_DDN, gamma=args.gamma_DDN)
-    
+                        init_norm=args.init_norm_DDN, gamma=args.gamma_DDN)
 
     # get dataset and iterate through each sample
     # dataset = datasets.get_dataset(args.dataset_name, args.data_split)
@@ -86,8 +85,8 @@ if __name__ == "__main__":
 
     num_test_samples = len(testloader)
     num_corr_pred = 0
-
     base_smoothed_agree = 0
+
     for itr, (x, label) in enumerate(tqdm(testloader)):
 
         # only certify every args.skip_examples, and stop after args.max_examples
@@ -100,9 +99,6 @@ if __name__ == "__main__":
 
         x = x.to(device)
         label = label.to(device)
-
-        # prediction, radius = smooth_classifier.certify(x, args.N0, args.N, args.alpha, args.batch_size)
-        # time_elapsed = round(time.time() - start_time, 4)
 
         if args.attack in ['PGD', 'DDN']:
             x = x.repeat((args.num_noise_vec, 1, 1, 1))

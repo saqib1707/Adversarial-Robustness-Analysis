@@ -10,6 +10,11 @@ from torchvision.models.resnet import resnet50
 import datasets
 # from cifar_resnet import resnet_cifar
 
+# resnet50 - the classic ResNet-50, sized for ImageNet
+# cifar_resnet20 - a 20-layer residual network sized for CIFAR
+# cifar_resnet110 - a 110-layer residual network sized for CIFAR
+ARCHITECTURES = ["resnet50", "cifar_resnet110", "imagenet32_resnet110"]
+
 
 class CNN_net(nn.Module):
     def __init__(self):
