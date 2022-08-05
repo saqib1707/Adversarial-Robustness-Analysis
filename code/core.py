@@ -86,12 +86,12 @@ class SmoothClassifier(object):
 
                 x_repeated = x.repeat((batch_size_itr, 1, 1, 1))
                 noise_samples = torch.randn_like(x_repeated, device=device) * self.sigma
-                corrupted_sample = x_repeated + noise_samples
+                corrupted_samples = x_repeated + noise_samples
                 # print(corrupted_sample.shape)
                 # corrupted_sample = corrupted_sample.to(device)
                 # print(x.get_device())
 
-                predictions = torch.argmax(self.base_classifier(corrupted_sample), dim=1)
+                predictions = torch.argmax(self.base_classifier(corrupted_samples), dim=1)
                 # print(predictions.shape, predictions.max(), predictions.min())
 
                 for class_idx in predictions:

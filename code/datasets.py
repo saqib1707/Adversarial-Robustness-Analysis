@@ -111,5 +111,3 @@ def get_num_classes(dataset_name: str):
         return 10
     elif dataset_name == "cifar100":
         return 100
-
-

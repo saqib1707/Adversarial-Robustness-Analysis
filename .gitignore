@@ -6,6 +6,8 @@ thumbs.db
 data/
 nautilus_kubernetes/
 model_checkpoints/
+logging_dir/
+smoothing-adversarial/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

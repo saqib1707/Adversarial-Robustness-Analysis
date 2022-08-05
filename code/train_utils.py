@@ -1,5 +1,21 @@
 import os
 import torch
+import torch.nn as nn
+
+
+class AverageMeter(object):
+    """computes and stores the average and current value"""
+    def __init__(self):
+        self.val = 0
+        self.avg = 0
+        self.sum = 0
+        self.count = 0
+
+    def update(self, val, n=1):
+        self.val = val
+        self.sum = self.sum + val * n 
+        self.count = self.count + n
+        self.avg = self.sum / self.count
 
 
 def accuracy(output, target, topk=(1,)):
@@ -19,6 +35,6 @@ def accuracy(output, target, topk=(1,)):
         return res
 
 
-def requires_grad_(model:torch.nn.Module, requires_grad:bool) -> None:
+def requires_grad_(model: nn.Module, requires_grad: bool) -> None:
     for param in model.parameters():
         param.requires_grad_(requires_grad)

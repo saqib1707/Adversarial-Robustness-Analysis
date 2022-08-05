@@ -1,3 +1,5 @@
+"""This code loads a base classifier and runs CERTIFY (prediction + radius) on many examples from a dataset
+"""
 import os
 import time
 import argparse
@@ -17,15 +19,17 @@ parser.add_argument("--N0", type=int, default=100, help="number of samples for s
 parser.add_argument("--N", type=int, default=100000, help="number of samples for estimation")
 parser.add_argument("--alpha", type=float, default=1e-3, help="failure probability")
 parser.add_argument("--batch_size", type=int, default=32, help="batch size")
-parser.add_argument("--skip_examples", type=int, default=1, help="samples to skip")
-parser.add_argument("--max_examples", type=int, default=-1, help="maximum samples to certify")
+parser.add_argument("--skip_examples", type=int, default=1, help="number of samples to skip")
+parser.add_argument("--max_examples", type=int, default=-1, help="stop after this many samples")
+parser.add_argument("--num_workers", default=4, type=int, metavar='N', help='number of data loading workers (default: 4)')
+parser.add_argument("outfile_path", type=str, help="output file")
 
 args = parser.parse_args()
 
-print(args.dataset_name, args.base_classifier_path, args.sigma, args.batch_size, args.N0, args.N, args.alpha)
+# print(args.dataset_name, args.base_classifier_path, args.sigma, args.batch_size, args.N0, args.N, args.alpha)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-kwargs = {'num_workers': 2, 'pin_memory': True} if device.type == "cuda" else {}
+kwargs = {'num_workers': args.num_workers, 'pin_memory': True} if device.type == "cuda" else {}
 
 if __name__ == "__main__":
     # load the checkpoint from the base classifier
@@ -33,29 +37,43 @@ if __name__ == "__main__":
     # print(model_checkpoint["arch"])
     base_classifier = models.get_architecture(model_checkpoint["arch"], args.dataset_name, device)
     base_classifier.load_state_dict(model_checkpoint['state_dict'])
+    base_classifier.eval()
 
     # create the smoothed classifier
-    print("Number of classes: ", datasets.get_num_classes(args.dataset_name))
     smooth_classifier = SmoothClassifier(base_classifier, datasets.get_num_classes(args.dataset_name), args.sigma)
+
+    # prepare output file for logging
+    outfile = open(args.outfile_path, 'w')
+    # print("idx/ \t GT label \t Pred \t Radius \t Time taken", file=outfile, flush=True)
 
     # x = torch.randn((3, 32, 32), device=device)
     # prediction = smooth_classifier.predict(x, N=64, alpha=0.001, batch_size=1)
     # print(prediction)
 
     # get dataset and iterate through each sample
-    # dataset = datasets.get_dataset(args.dataset_name, args.data_split)
-    data_dir = "data/CIFAR10/"
+    print("Number of classes: ", datasets.get_num_classes(args.dataset_name))
     train_batch_size = 32
     test_batch_size = 1
-    _, testloader, num_classes = datasets.load_cifar10_data(data_dir, train_batch_size, test_batch_size, None, kwargs)
+
+    if args.dataset_name == "cifar10":
+        data_dir = "data/CIFAR10/"
+        _, testloader, num_classes = datasets.load_cifar10_data(data_dir, train_batch_size, test_batch_size, None, kwargs)
+    elif args.dataset_name == "imagenet":
+        data_dir = "data/ImageNet/"
+        _, testloader, num_classes = datasets.load_imagenet_data(data_dir, train_batch_size, test_batch_size, None, kwargs)
+    elif args.dataset_name == "mnist":
+        data_dir = "data/MNIST/"
+        _, testloader, num_classes = datasets.load_mnist_data(data_dir, train_batch_size, test_batch_size, None, kwargs)
+    else:
+        raise Exception("Unrecognised dataset")
 
     num_test_samples = len(testloader)
     num_corr_pred = 0
+    num_samples_proc = 0
     
     for itr, (x, label) in enumerate(tqdm(testloader)):
         if itr % args.skip_examples != 0:
             continue
-        
         if itr // args.skip_examples == args.max_examples:
             break
 
@@ -63,10 +81,13 @@ if __name__ == "__main__":
         start_time = time.time()
         prediction, radius = smooth_classifier.certify(x, args.N0, args.N, args.alpha, args.batch_size)
         time_elapsed = round(time.time() - start_time, 4)
+        num_samples_proc += x.shape[0]
 
         num_corr_pred += int(prediction == label)
-        running_test_acc = round(num_corr_pred / (itr+1), 4)
+        running_test_acc = round(num_corr_pred / num_samples_proc, 4)
 
-        print("Iteration:{}/{} \t Label (GT/Pred): {}/{} \t Acc: {} \t Time: {} s".format(itr, num_test_samples, label.item(), prediction, running_test_acc, time_elapsed))
+        print("Itr:{}/{} \t Label (GT/Pred): {}/{} \t Acc: {} \t Time: {} s".format(itr, num_test_samples, label.item(), prediction, running_test_acc, time_elapsed), file=outfile, flush=True)
     
-    print("Test accuracy:", round(num_corr_pred / num_test_samples, 4) * 100)
+    print("Test accuracy:", round(num_corr_pred / num_samples_proc, 4) * 100, file=outfile, flush=True)
+
+    outfile.close()

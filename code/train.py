@@ -28,7 +28,7 @@ parser.add_argument('--lr_step_size', type=int, default=30,
 parser.add_argument('--gamma', type=float, default=0.1,
                     help='LR is multiplied by gamma on schedule.')
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M', help='momentum')
-parser.add_argument('--weight-decay', '--wd', default=1e-4, type=float,
+parser.add_argument('--weight_decay', '--wd', default=1e-4, type=float,
                     metavar='W', help='weight decay (default: 1e-4)')
 parser.add_argument('--noise_std', default=0.0, type=float,
                     help="standard deviation of Gaussian noise for data augmentation")
@@ -36,19 +36,24 @@ parser.add_argument('--gpu', default=None, type=str,
                     help='id(s) for CUDA_VISIBLE_DEVICES')
 parser.add_argument('--print_freq', default=10, type=int, metavar='N',
                     help='print training frequency (default: 10)')
+
 args = parser.parse_args()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 kwargs = {'num_workers': args.num_workers, 'pin_memory': True} if device.type == "cuda" else {}
 
 
-def main():
+def train():
     if not os.path.exists(args.outdir):
         os.makedirs(args.outdir)
 
     # get dataset and iterate through each sample
-    data_dir = "data/CIFAR10/"
-    trainloader, testloader, num_classes = datasets.load_cifar10_data(data_dir, args.train_batch_size, args.test_batch_size, None, kwargs)
+    if dataset_name == "cifar10":
+        data_dir = "data/CIFAR10/"
+        trainloader, testloader, num_classes = datasets.load_cifar10_data(data_dir, args.train_batch_size, args.test_batch_size, None, kwargs)
+    elif dataset_name == "imagenet":
+        data_dir = "data/ImageNet/"
+        trainloader, testloader, num_classes = datasets.load_imagenet_data(data_dir, args.train_batch_size, args.test_batch_size, None, kwargs)
 
     base_classifier = models.get_architecture(args.arch, args.dataset_name, device)
 
@@ -117,3 +122,7 @@ def main():
             'state_dict': model.state_dict(),
             'optimizer': optimizer.state_dict(),
         }, os.path.join(args.outdir, 'checkpoint.pth.tar'))
+
+
+if __name__ == "__main__":
+    train()
