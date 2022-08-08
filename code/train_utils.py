@@ -18,20 +18,34 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
 
-def accuracy(output, target, topk=(1,)):
+def compute_accuracy(output, target, topk=(1,)):
     """Computes the accuracy over the top-K predictions for the specified values of k"""
     with torch.no_grad():
         maxk = max(topk)
-        batch_size = target.size(0)
+        batch_size = target.shape[0]
+        # print(maxk, batch_size, output.shape, target.shape)
 
-        _, pred = output.topk(maxk, 1, True, True)
-        pred = pred.t()
-        correct = pred.eq(target.view(1, -1).expand_as(pred))
+        _, pred = torch.topk(output, k=maxk, dim=1, largest=True, sorted=True)
+        # print(pred.shape)
+        # pred = pred.t()
+        # print(pred.shape)
+        # print(target, target.shape)
+        # print(target.view(-1, 1), target.view(-1, 1).shape)
+        # print(target.view(-1, 1).expand_as(pred))
+        correct = torch.eq(pred, target.view(-1, 1).expand_as(pred))
+        # print("Correct shape:", correct.shape)
+
+        # print(correct[:,:2].shape)
+        # print(correct[:,:2].view(2, -1).shape)
+        # print(correct[:,:2].float())
+        # print(correct[:,:2].float().sum(dim=1, keepdim=True).shape)
 
         res = []
         for k in topk:
-            correct_k = correct[:k].view(-1).float().sum(0, keepdim=True)
+            correct_k = correct[:, :k].float().sum()
+            # print(correct_k)
             res.append(correct_k.mul_(100.0 / batch_size))
+        
         return res
 
 

@@ -41,7 +41,6 @@ class PGD_L2(Attacker):
         self.random_start = random_start
         self.max_norm = max_norm
         self.device = device
-        print("This device is being used:", device)
 
     def attack(self, model: nn.Module, inputs: torch.Tensor, labels: torch.Tensor,
                noise: torch.Tensor = None, num_noise_vectors=1, targeted: bool = False, no_grad=False) -> torch.Tensor:
@@ -145,7 +144,6 @@ class PGD_L2(Attacker):
         optimizer = optim.SGD([delta], lr=self.max_norm/self.steps*2)
 
         for i in range(self.steps):
-
             adv = inputs + delta.repeat(1,num_noise_vectors,1,1).view_as(inputs)
             if noise is not None:
                 adv = adv + noise

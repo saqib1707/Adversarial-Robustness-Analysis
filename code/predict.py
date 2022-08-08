@@ -34,7 +34,7 @@ parser.add_argument("--epsilon", default=64.0, type=float)
 parser.add_argument("--num_noise_vec", default=1, type=int,
                     help="number of noise vectors to use for finding adversarial examples")
 parser.add_argument("--base_attack", action='store_true')
-parser.add_argument("--attack_method", default=None, type=str, choices=['DDN', 'PGD'])
+parser.add_argument("--attack_method", default='PGD', type=str, choices=['DDN', 'PGD'])
 parser.add_argument("--no_grad_attack", action='store_true',
                     help="Choice of whether to use gradients during attack or do the cheap trick")
 
