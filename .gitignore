@@ -4,7 +4,7 @@ thumbs.db
 
 # repo related files and directories
 data/
-nautilus_kubernetes/
+# nautilus_kubernetes/
 model_checkpoints/
 logging_dir/
 smoothing-adversarial/

@@ -1,0 +1,16 @@
+numpy
+matplotlib
+scipy
+statsmodels
+sklearn
+scikit-learn
+pandas
+seaborn
+fasttest
+jupyter
+ftfy
+regex
+tqdm
+tensorboardX
+setGPU
+git+https://github.com/openai/CLIP.git

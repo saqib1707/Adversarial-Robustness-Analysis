@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: divyansh-pod-2
+  namespace: rd
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: nvidia.com/gpu.product
+            operator: In
+            values:
+            - NVIDIA-GeForce-RTX-1080-Ti
+  containers:
+  - name: divyansh-container
+    image: somil55/condapytorch:v1.0.2
+    imagePullPolicy: Always
+    resources:
+      limits:
+        memory: "12Gi"
+        cpu: 2
+        nvidia.com/gpu: 1
+        ephemeral-storage: 50Gi
+      requests:
+        memory: "12Gi"
+        cpu: 2
+        nvidia.com/gpu: 1
+        ephemeral-storage: 50Gi
+    volumeMounts:
+    - mountPath: /root/ddivyanshcephfspvc
+      name: ddivyanshcephfspvc
+    - mountPath: /root/ddivyanshcephfspvcoutput
+      name: ddivyanshcephfspvcoutputexp
+    - name: data
+      mountPath: /mnt/data
+    command: ["sh", "-c", "sleep infinity"]
+  volumes:
+    - name: ddivyanshcephfspvc
+      persistentVolumeClaim:
+        claimName: ddivyanshcephfspvc
+    - name: ddivyanshcephfspvcoutputexp
+      persistentVolumeClaim:
+        claimName: ddivyanshcephfspvcoutputexp
+    - name: data
+      emptyDir: {}
+  
+
+  

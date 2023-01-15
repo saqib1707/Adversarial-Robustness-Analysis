@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: saqib-pod-1
+  namespace: rd
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: nvidia.com/gpu.product
+            operator: In
+            values:
+            - NVIDIA-GeForce-RTX-3090
+            # values:
+            # - NVIDIA-GeForce-RTX-1080-Ti
+  containers:
+  - name: saqib-container-1
+    # image: somil55/condapytorch:v1.0.2
+    # image: ubuntu
+    # image: gitlab-registry.nrp-nautilus.io/prp/jupyter-stack/prp:latest
+    # image: pytorch/pytorch:latest
+    image: saqib1707/mypytorch:v2
+    imagePullPolicy: Always
+    resources:
+      limits:
+        memory: 12Gi
+        cpu: 2
+        nvidia.com/gpu: 1
+        ephemeral-storage: 50Gi
+      requests:
+        memory: 12Gi
+        cpu: 2
+        nvidia.com/gpu: 1
+        ephemeral-storage: 50Gi
+    volumeMounts:
+    - mountPath: /home/saqibcephfspvc
+      name: saqibcephfspvc
+    # - mountPath: /home/saqibcephfspvcoutput
+    #   name: saqibcephfspvcoutput
+    # - mountPath: /mnt/data
+    #   name: data
+    command: ["sh", "-c", "sleep infinity"]
+  volumes:
+    - name: saqibcephfspvc
+      persistentVolumeClaim:
+        claimName: saqibcephfspvc
+    # - name: saqibcephfspvcoutput
+    #   persistentVolumeClaim:
+    #     claimName: saqibcephfspvcoutput
+    # - name: data
+    #   emptyDir: {}

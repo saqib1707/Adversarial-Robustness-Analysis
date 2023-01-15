@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: saqib-job-1
+  namespace: rd
+spec:
+  template:
+    spec:
+      containers:
+      - name: saqib-container
+        image: somil55/condapytorch:v1.0.1
+        command: ["conda", "run", "-n", "netdissectlite", "/bin/bash", "-c", "cd /root/ddivyanshcephfspvc/ExplainableAI && python main.py"]
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "12Gi"
+            cpu: 1
+            nvidia.com/gpu: 1
+            ephemeral-storage: 8Gi
+          requests:
+            memory: "12Gi"
+            cpu: 1
+            nvidia.com/gpu: 1
+            ephemeral-storage: 8Gi
+        volumeMounts:
+        - mountPath: /home/saqibcephfspvc
+          name: saqibcephfspvc
+        # - mountPath: /home/ddivyanshcephfspvcoutput/
+        #   name: ddivyanshcephfspvcoutput
+      volumes:
+        - name: saqibcephfspvc
+          persistentVolumeClaim:
+            claimName: saqibcephfspvc
+        # - name: ddivyanshcephfspvcoutput
+        #   persistentVolumeClaim:
+        #     claimName: ddivyanshcephfspvcoutput
+      restartPolicy: Never
+  backoffLimit: 0
